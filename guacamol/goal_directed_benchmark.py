@@ -95,7 +95,7 @@ class GoalDirectedBenchmark:
         int_simi_histogram = np.histogram(internal_similarities, bins=10, range=(0, 1), density=True)
 
         metadata: Dict[str, Any] = {}
-        metadata.update(top_x_dict)
+        metadata |= top_x_dict
         metadata['internal_similarity_max'] = internal_similarities.max()
         metadata['internal_similarity_mean'] = internal_similarities.mean()
         metadata["internal_similarity_histogram_density"] = int_simi_histogram[0].tolist(),
