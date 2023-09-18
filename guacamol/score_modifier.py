@@ -110,10 +110,7 @@ class MinMaxGaussianModifier(ScoreModifier):
         self._full_gaussian = GaussianModifier(mu=mu, sigma=sigma)
 
     def __call__(self, x):
-        if self.minimize:
-            mod_x = np.maximum(x, self.mu)
-        else:
-            mod_x = np.minimum(x, self.mu)
+        mod_x = np.maximum(x, self.mu) if self.minimize else np.minimum(x, self.mu)
         return self._full_gaussian(mod_x)
 
 

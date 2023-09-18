@@ -100,18 +100,16 @@ def smiles_to_rdkit_mol(smiles: str) -> Optional[Chem.Mol]:
 
 
 def split_charged_mol(smiles: str) -> str:
-    if smiles.count('.') > 0:
-        largest = ''
-        largest_len = -1
-        split = smiles.split('.')
-        for i in split:
-            if len(i) > largest_len:
-                largest = i
-                largest_len = len(i)
-        return largest
-
-    else:
+    if smiles.count('.') <= 0:
         return smiles
+    largest = ''
+    largest_len = -1
+    split = smiles.split('.')
+    for i in split:
+        if len(i) > largest_len:
+            largest = i
+            largest_len = len(i)
+    return largest
 
 
 def initialise_neutralisation_reactions():
@@ -141,16 +139,15 @@ def initialise_neutralisation_reactions():
 def neutralise_charges(mol, reactions=None):
     replaced = False
 
-    for i, (reactant, product) in enumerate(reactions):
+    for reactant, product in reactions:
         while mol.HasSubstructMatch(reactant):
             replaced = True
             rms = AllChem.ReplaceSubstructs(mol, reactant, product)
             mol = rms[0]
-    if replaced:
-        Chem.SanitizeMol(mol)
-        return mol, True
-    else:
+    if not replaced:
         return mol, False
+    Chem.SanitizeMol(mol)
+    return mol, True
 
 
 def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralization_rxns, tanimoto_cutoff=0.5,
@@ -180,10 +177,7 @@ def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralizatio
         # We only accept molecules consisting of H, B, C, N, O, F, Si, P, S, Cl, aliphatic Se, Br, I.
         metal_smarts = Chem.MolFromSmarts('[!#1!#5!#6!#7!#8!#9!#14!#15!#16!#17!#34!#35!#53]')
 
-        has_metal = mol.HasSubstructMatch(metal_smarts)
-
-        # Exclude molecules containing the forbidden elements.
-        if has_metal:
+        if has_metal := mol.HasSubstructMatch(metal_smarts):
             print(f'metal {smiles}')
             return []
 
@@ -204,7 +198,7 @@ def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralizatio
         if max_tanimoto < tanimoto_cutoff and canon_smi not in holdout_set:
             return [canon_smi]
         else:
-            print("Exclude: {} {}".format(canon_smi, max_tanimoto))
+            print(f"Exclude: {canon_smi} {max_tanimoto}")
     except Exception as e:
         print(e)
     return []

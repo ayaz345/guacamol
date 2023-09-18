@@ -211,7 +211,7 @@ def main():
 
     # Put all nonzero molecules in a list, remove duplicates, sort and shuffle
 
-    all_good_mols = sorted(list(set([item[0] for item in output if item])))
+    all_good_mols = sorted(list({item[0] for item in output if item}))
     np.random.shuffle(all_good_mols)
     print(f'Ended up with {len(all_good_mols)} molecules. Preparing splits...')
 
@@ -222,7 +222,7 @@ def main():
     VALID_SIZE = int(0.05 * len(all_good_mols))
     TEST_SIZE = int(0.15 * len(all_good_mols))
 
-    dev_set = all_good_mols[0:VALID_SIZE]
+    dev_set = all_good_mols[:VALID_SIZE]
     dev_path = os.path.join(args.destination, f'{file_prefix}_dev-valid.smiles')
     write_smiles(dev_set, dev_path)
 

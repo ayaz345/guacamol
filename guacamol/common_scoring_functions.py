@@ -167,13 +167,12 @@ class SMARTSScoringFunction(ScoringFunctionBasedOnRdkitMol):
 
         matches = mol.GetSubstructMatches(self.target)
 
-        if len(matches) > 0:
-            if self.inverse:
-                return 0.0
-            else:
-                return 1.0
+        if (
+            len(matches) > 0
+            and self.inverse
+            or len(matches) <= 0
+            and not self.inverse
+        ):
+            return 0.0
         else:
-            if self.inverse:
-                return 1.0
-            else:
-                return 0.0
+            return 1.0

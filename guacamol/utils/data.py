@@ -70,13 +70,13 @@ def download_if_not_present(filename, uri):
     Download a file from a URI if it doesn't already exist.
     """
     if os.path.isfile(filename):
-        print("{} already downloaded, reusing.".format(filename))
+        print(f"{filename} already downloaded, reusing.")
     else:
         with open(filename, "wb") as fd:
-            print('Starting {} download from {}...'.format(filename, uri))
+            print(f'Starting {filename} download from {uri}...')
             with ProgressBarUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1) as t:
                 urlretrieve(uri, fd.name, reporthook=t.update_to)
-            print('Finished {} download.'.format(filename))
+            print(f'Finished {filename} download.')
 
 
 class ProgressBar(tqdm):
